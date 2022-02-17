@@ -2,6 +2,9 @@ package com.uniovi.notaneitor.services;
 
 import com.uniovi.notaneitor.entities.Mark;
 import com.uniovi.notaneitor.entities.Teacher;
+import com.uniovi.notaneitor.repositories.MarksRepository;
+import com.uniovi.notaneitor.repositories.TeachersRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -13,33 +16,34 @@ import java.util.List;
 public class TeachersService {
 
 
-    private List<Teacher> teacherList = new LinkedList<>();
+    @Autowired
+    private TeachersRepository teachersRepository;
 
-    @PostConstruct
-    public void init() {
-        teacherList.add(new Teacher(1L, "77777777W", "Juan", "López Martínez", "Algoritmia"));
-        teacherList.add(new Teacher(2L, "66666666J", "Ramón", "García García", "Sistemas Informáticos"));
-    }
+
 
     public List<Teacher> getTeachers() {
-        return teacherList;
+        List<Teacher> teachers = new ArrayList<Teacher>();
+        teachersRepository.findAll().forEach(teachers::add);
+        return teachers;
+
     }
 
     public Teacher getTeacher(Long id) {
-        return teacherList.stream()
-                .filter(teacher -> teacher.getId().equals(id)).findFirst().get();
+        return teachersRepository.findById(id).get();
     }
 
     public void addTeacher(Teacher teacher) {
         // Si en Id es null le asignamos el último + 1 de la lista
-        if(teacher.getId() == null)
-            teacher.setId(teacherList.get(teacherList.size()-1).getId()+1);
-        teacherList.add(teacher);
+        if (teacher.getId() == null) {
+            teacher.setId(teachersRepository.count()+1);
+        }
+
+        teachersRepository.save(teacher);
     }
 
     public void deleteTeacher(Long id) {
 
-        teacherList.removeIf(teacher->teacher.getId().equals(id));
+        teachersRepository.deleteById(id);
     }
 
 }
