@@ -53,7 +53,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public SpringSecurityDialect securityDialect() {
         return new SpringSecurityDialect();
     }
-
 /*
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
