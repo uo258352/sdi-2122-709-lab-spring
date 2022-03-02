@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.uniovi.notaneitor.entities.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.HashSet;
-import java.util.Set;
+import java.security.Principal;
 
 @Controller
 public class MarksController {
@@ -31,8 +30,10 @@ public class MarksController {
     private MarksService marksService;
 
     @RequestMapping("/mark/list")
-    public String getList(Model model) {
-        model.addAttribute("markList", marksService.getMarks());
+    public String getList(Model model, Principal principal){
+        String dni = principal.getName(); // DNI es el name de la autenticación
+        User user = usersService.getUserByDni(dni);
+        model.addAttribute("markList", marksService.getMarksForUser(user) );
         return "mark/list";
     }
 
@@ -92,8 +93,10 @@ public class MarksController {
     }
 
     @RequestMapping("/mark/list/update")
-    public String updateList(Model model){
-        model.addAttribute("markList", marksService.getMarks() );
+    public String updateList(Model model, Principal principal) {
+        String dni = principal.getName(); // DNI es el name de la autenticación
+        User user = usersService.getUserByDni(dni);
+        model.addAttribute("markList", marksService.getMarksForUser(user));
         return "mark/list :: tableMarks";
     }
 
