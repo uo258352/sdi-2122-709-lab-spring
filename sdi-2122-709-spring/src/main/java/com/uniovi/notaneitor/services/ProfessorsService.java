@@ -1,7 +1,9 @@
 package com.uniovi.notaneitor.services;
 
 import com.uniovi.notaneitor.entities.Professor;
+import com.uniovi.notaneitor.entities.User;
 import com.uniovi.notaneitor.repositories.ProfessorsRepository;
+import com.uniovi.notaneitor.repositories.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,31 +17,39 @@ public class ProfessorsService {
     @Autowired
     private ProfessorsRepository professorsRepository;
 
+    @Autowired
+    private RolesService rolesService;
 
 
-    public List<Professor> getProfessors() {
-        List<Professor> professors = new ArrayList<Professor>();
-        professorsRepository.findAll().forEach(professors::add);
+    @Autowired
+    private UsersService usersService;
+
+    public List<User> getProfessors() {
+        List<User> professors = new ArrayList<User>();
+        List<User> users = usersService.getUsers();
+        for (User user: users) {
+            if (user.getRole().equals(rolesService.getRoles()[1]))
+                professors.add(user);
+
+        }
         return professors;
 
     }
 
-    public Professor getTeacher(Long id) {
-        return professorsRepository.findById(id).get();
+    public User getProfessor(Long id) {
+
+        return usersService.getUser(id);
     }
 
-    public void addTeacher(Professor professor) {
+    public void addProfessor(User professor) {
         // Si en Id es null le asignamos el último + 1 de la lista
-        if (professor.getId() == null) {
-            professor.setId(professorsRepository.count()+1);
-        }
-
-        professorsRepository.save(professor);
+        professor.setRole(rolesService.getRoles()[1]);
+        usersService.addUser(professor);
     }
 
-    public void deleteTeacher(Long id) {
+    public void deleteProfessor(Long id) {
 
-        professorsRepository.deleteById(id);
+        usersService.deleteUser(id);
     }
 
 }
